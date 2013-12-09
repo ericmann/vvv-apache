@@ -59,8 +59,8 @@ apt_package_check_list=(
 	php5-gd
 	php-apc
 
-	# nginx is installed as the default web server
-	nginx
+	# Apache is installed as the default web server
+	apache2
 
 	# memcached is made available for object caching
 	memcached
@@ -257,54 +257,54 @@ else
 fi
 
 # Configuration for nginx
-if [[ ! -e /etc/nginx/server.key ]]; then
-	echo "Generate Nginx server private key..."
-	vvvgenrsa="$(openssl genrsa -out /etc/nginx/server.key 2048 2>&1)"
-	echo $vvvgenrsa
-fi
-if [[ ! -e /etc/nginx/server.csr ]]; then
-	echo "Generate Certificate Signing Request (CSR)..."
-	openssl req -new -batch -key /etc/nginx/server.key -out /etc/nginx/server.csr
-fi
-if [[ ! -e /etc/nginx/server.crt ]]; then
-	echo "Sign the certificate using the above private key and CSR..."
-	vvvsigncert="$(openssl x509 -req -days 365 -in /etc/nginx/server.csr -signkey /etc/nginx/server.key -out /etc/nginx/server.crt 2>&1)"
-	echo $vvvsigncert
-fi
+#if [[ ! -e /etc/nginx/server.key ]]; then
+#	echo "Generate Nginx server private key..."
+#	vvvgenrsa="$(openssl genrsa -out /etc/nginx/server.key 2048 2>&1)"
+#	echo $vvvgenrsa
+#fi
+#if [[ ! -e /etc/nginx/server.csr ]]; then
+#	echo "Generate Certificate Signing Request (CSR)..."
+#	openssl req -new -batch -key /etc/nginx/server.key -out /etc/nginx/server.csr
+#fi
+#if [[ ! -e /etc/nginx/server.crt ]]; then
+#	echo "Sign the certificate using the above private key and CSR..."
+#	vvvsigncert="$(openssl x509 -req -days 365 -in /etc/nginx/server.csr -signkey /etc/nginx/server.key -out /etc/nginx/server.crt 2>&1)"
+#	echo $vvvsigncert
+#fi
 
-echo -e "\nSetup configuration files..."
+#echo -e "\nSetup configuration files..."
 
 # Unlink all previous symlinked config files. This allows us to avoid errors
 # as we proceed to copy over new versions of these config files. It is likely
 # that this section will be removed after everyone has had a fair chance. With
 # a `vagrant destroy`, none of this is necessary.
-unlink /etc/nginx/nginx.conf
-unlink /etc/nginx/nginx-wp-common.conf
-unlink /etc/php5/fpm/pool.d/www.conf
-unlink /etc/php5/fpm/conf.d/php-custom.ini
-unlink /etc/php5/fpm/conf.d/xdebug.ini
-unlink /etc/php5/fpm/conf.d/apc.ini
-unlink /etc/memcached.conf
-unlink /home/vagrant/.bash_profile
-unlink /home/vagrant/.bash_aliases
-unlink /home/vagrant/.vimrc
+#unlink /etc/nginx/nginx.conf
+#unlink /etc/nginx/nginx-wp-common.conf
+#unlink /etc/php5/fpm/pool.d/www.conf
+#unlink /etc/php5/fpm/conf.d/php-custom.ini
+#unlink /etc/php5/fpm/conf.d/xdebug.ini
+#unlink /etc/php5/fpm/conf.d/apc.ini
+#unlink /etc/memcached.conf
+#unlink /home/vagrant/.bash_profile
+#unlink /home/vagrant/.bash_aliases
+#unlink /home/vagrant/.vimrc
 
 # Used to to ensure proper services are started on `vagrant up`
-cp /srv/config/init/vvv-start.conf /etc/init/vvv-start.conf
+#cp /srv/config/init/vvv-start.conf /etc/init/vvv-start.conf
 
-echo " * /srv/config/init/vvv-start.conf               -> /etc/init/vvv-start.conf"
+#echo " * /srv/config/init/vvv-start.conf               -> /etc/init/vvv-start.conf"
 
 # Copy nginx configuration from local
-cp /srv/config/nginx-config/nginx.conf /etc/nginx/nginx.conf
-cp /srv/config/nginx-config/nginx-wp-common.conf /etc/nginx/nginx-wp-common.conf
-if [[ ! -d /etc/nginx/custom-sites ]]; then
-	mkdir /etc/nginx/custom-sites/
-fi
-rsync -rvzh --delete /srv/config/nginx-config/sites/ /etc/nginx/custom-sites/
+#cp /srv/config/nginx-config/nginx.conf /etc/nginx/nginx.conf
+#cp /srv/config/nginx-config/nginx-wp-common.conf /etc/nginx/nginx-wp-common.conf
+#if [[ ! -d /etc/nginx/custom-sites ]]; then
+#	mkdir /etc/nginx/custom-sites/
+#fi
+#rsync -rvzh --delete /srv/config/nginx-config/sites/ /etc/nginx/custom-sites/
 
-echo " * /srv/config/nginx-config/nginx.conf           -> /etc/nginx/nginx.conf"
-echo " * /srv/config/nginx-config/nginx-wp-common.conf -> /etc/nginx/nginx-wp-common.conf"
-echo " * /srv/config/nginx-config/sites/               -> /etc/nginx/custom-sites"
+#echo " * /srv/config/nginx-config/nginx.conf           -> /etc/nginx/nginx.conf"
+#echo " * /srv/config/nginx-config/nginx-wp-common.conf -> /etc/nginx/nginx-wp-common.conf"
+#echo " * /srv/config/nginx-config/sites/               -> /etc/nginx/custom-sites"
 
 # Copy php-fpm configuration from local
 cp /srv/config/php5-fpm-config/www.conf /etc/php5/fpm/pool.d/www.conf
@@ -345,7 +345,7 @@ echo " * /srv/config/homebin                           -> /home/vagrant/bin"
 #
 # Make sure the services we expect to be running are running.
 echo -e "\nRestart services..."
-service nginx restart
+#service nginx restart
 service memcached restart
 
 # Disable PHP Xdebug module by default
@@ -546,7 +546,7 @@ fi
 # Kill previously symlinked Nginx configs
 # We can't know what sites have been removed, so we have to remove all
 # the configs and add them back in again.
-find /etc/nginx/custom-sites -name 'vvv-auto-*.conf' -exec rm {} \;
+#find /etc/nginx/custom-sites -name 'vvv-auto-*.conf' -exec rm {} \;
 
 # Look for site setup scripts
 for SITE_CONFIG_FILE in $(find /srv/www -maxdepth 5 -name 'vvv-init.sh'); do
@@ -558,23 +558,23 @@ for SITE_CONFIG_FILE in $(find /srv/www -maxdepth 5 -name 'vvv-init.sh'); do
 done
 
 # Look for Nginx vhost files, symlink them into the custom sites dir
-for SITE_CONFIG_FILE in $(find /srv/www -maxdepth 5 -name 'vvv-nginx.conf'); do
-	DEST_CONFIG_FILE=${SITE_CONFIG_FILE//\/srv\/www\//}
-	DEST_CONFIG_FILE=${DEST_CONFIG_FILE//\//\-}
-	DEST_CONFIG_FILE=${DEST_CONFIG_FILE/%-vvv-nginx.conf/}
-	DEST_CONFIG_FILE="vvv-auto-$DEST_CONFIG_FILE-$(md5sum <<< $SITE_CONFIG_FILE | cut -c1-32).conf"
-	# We allow the replacement of the {vvv_path_to_folder} token with
-	# whatever you want, allowing flexible placement of the site folder
-	# while still having an Nginx config which works.
-	DIR="$(dirname $SITE_CONFIG_FILE)"
-	sed "s#{vvv_path_to_folder}#$DIR#" $SITE_CONFIG_FILE > /etc/nginx/custom-sites/$DEST_CONFIG_FILE
-done
+#for SITE_CONFIG_FILE in $(find /srv/www -maxdepth 5 -name 'vvv-nginx.conf'); do
+#	DEST_CONFIG_FILE=${SITE_CONFIG_FILE//\/srv\/www\//}
+#	DEST_CONFIG_FILE=${DEST_CONFIG_FILE//\//\-}
+#	DEST_CONFIG_FILE=${DEST_CONFIG_FILE/%-vvv-nginx.conf/}
+#	DEST_CONFIG_FILE="vvv-auto-$DEST_CONFIG_FILE-$(md5sum <<< $SITE_CONFIG_FILE | cut -c1-32).conf"
+#	# We allow the replacement of the {vvv_path_to_folder} token with
+#	# whatever you want, allowing flexible placement of the site folder
+#	# while still having an Nginx config which works.
+#	DIR="$(dirname $SITE_CONFIG_FILE)"
+#	sed "s#{vvv_path_to_folder}#$DIR#" $SITE_CONFIG_FILE > /etc/nginx/custom-sites/$DEST_CONFIG_FILE
+#done
 
 # RESTART SERVICES AGAIN
 #
 # Make sure the services we expect to be running are running.
-echo -e "\nRestart Nginx..."
-service nginx restart
+#echo -e "\nRestart Nginx..."
+#service nginx restart
 
 # Parse any vvv-hosts file located in www/ or subdirectories of www/
 # for domains to be added to the virtual machine's host file so that it is
