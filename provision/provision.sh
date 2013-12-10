@@ -58,9 +58,11 @@ apt_package_check_list=(
 	php-pear
 	php5-gd
 	php-apc
+	php5
 
 	# Apache is installed as the default web server
-	apache2
+	apache2-mpm-worker
+	libapache2-mod-fastcgi
 
 	# memcached is made available for object caching
 	memcached
@@ -256,55 +258,39 @@ else
 	echo -e "\nNo network connection available, skipping package installation"
 fi
 
-# Configuration for nginx
-#if [[ ! -e /etc/nginx/server.key ]]; then
-#	echo "Generate Nginx server private key..."
-#	vvvgenrsa="$(openssl genrsa -out /etc/nginx/server.key 2048 2>&1)"
-#	echo $vvvgenrsa
-#fi
-#if [[ ! -e /etc/nginx/server.csr ]]; then
-#	echo "Generate Certificate Signing Request (CSR)..."
-#	openssl req -new -batch -key /etc/nginx/server.key -out /etc/nginx/server.csr
-#fi
-#if [[ ! -e /etc/nginx/server.crt ]]; then
-#	echo "Sign the certificate using the above private key and CSR..."
-#	vvvsigncert="$(openssl x509 -req -days 365 -in /etc/nginx/server.csr -signkey /etc/nginx/server.key -out /etc/nginx/server.crt 2>&1)"
-#	echo $vvvsigncert
-#fi
-
 #echo -e "\nSetup configuration files..."
 
 # Unlink all previous symlinked config files. This allows us to avoid errors
 # as we proceed to copy over new versions of these config files. It is likely
 # that this section will be removed after everyone has had a fair chance. With
 # a `vagrant destroy`, none of this is necessary.
-#unlink /etc/nginx/nginx.conf
-#unlink /etc/nginx/nginx-wp-common.conf
-#unlink /etc/php5/fpm/pool.d/www.conf
-#unlink /etc/php5/fpm/conf.d/php-custom.ini
-#unlink /etc/php5/fpm/conf.d/xdebug.ini
-#unlink /etc/php5/fpm/conf.d/apc.ini
-#unlink /etc/memcached.conf
-#unlink /home/vagrant/.bash_profile
-#unlink /home/vagrant/.bash_aliases
-#unlink /home/vagrant/.vimrc
+unlink /etc/apache2/apache2.conf
+unlink /etc/apache2/conf.d/php5-fpm.conf
+unlink /etc/php5/fpm/pool.d/www.conf
+unlink /etc/php5/fpm/conf.d/php-custom.ini
+unlink /etc/php5/fpm/conf.d/xdebug.ini
+unlink /etc/php5/fpm/conf.d/apc.ini
+unlink /etc/memcached.conf
+unlink /home/vagrant/.bash_profile
+unlink /home/vagrant/.bash_aliases
+unlink /home/vagrant/.vimrc
 
 # Used to to ensure proper services are started on `vagrant up`
-#cp /srv/config/init/vvv-start.conf /etc/init/vvv-start.conf
+cp /srv/config/init/vvv-start.conf /etc/init/vvv-start.conf
 
-#echo " * /srv/config/init/vvv-start.conf               -> /etc/init/vvv-start.conf"
+echo " * /srv/config/init/vvv-start.conf               -> /etc/init/vvv-start.conf"
 
-# Copy nginx configuration from local
-#cp /srv/config/nginx-config/nginx.conf /etc/nginx/nginx.conf
-#cp /srv/config/nginx-config/nginx-wp-common.conf /etc/nginx/nginx-wp-common.conf
-#if [[ ! -d /etc/nginx/custom-sites ]]; then
-#	mkdir /etc/nginx/custom-sites/
-#fi
-#rsync -rvzh --delete /srv/config/nginx-config/sites/ /etc/nginx/custom-sites/
+# Copy Apache configuration from local
+cp /srv/config/apache-config/apache2.conf /etc/apache2/apache2.conf
+cp /srv/config/apache-config/php5-fpm.conf /etc/apache2/conf.d/php5-fpm.conf
+rsync -rvzh --delete /srv/config/apache-config/sites/ /etc/apache2/custom-sites/
 
-#echo " * /srv/config/nginx-config/nginx.conf           -> /etc/nginx/nginx.conf"
-#echo " * /srv/config/nginx-config/nginx-wp-common.conf -> /etc/nginx/nginx-wp-common.conf"
-#echo " * /srv/config/nginx-config/sites/               -> /etc/nginx/custom-sites"
+echo " * /srv/config/apache-config/apache2.conf         -> /etc/apache2/apache2.conf"
+echo " * /srv/config/apache-config/php-fpm.conf         -> /etc/apache2/conf.d/php-fpm.conf"
+echo " * /srv/config/apache-config/sites/               -> /etc/apache2/custom-sites/"
+
+# Configure Apache for PHP-FPM
+a2enmod actions fastcgi alias
 
 # Copy php-fpm configuration from local
 cp /srv/config/php5-fpm-config/www.conf /etc/php5/fpm/pool.d/www.conf
