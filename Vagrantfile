@@ -108,13 +108,13 @@ Vagrant.configure("2") do |config|
   # If a server-conf directory exists in the same directory as your Vagrantfile,
   # a mapped directory inside the VM will be created that contains these files.
   # This directory is currently used to maintain various config files for php and
-  # nginx as well as any pre-existing database files.
+  # Apache as well as any pre-existing database files.
   config.vm.synced_folder "config/", "/srv/config"
 
   # /srv/www/
   #
   # If a www directory exists in the same directory as your Vagrantfile, a mapped directory
-  # inside the VM will be created that acts as the default location for nginx sites. Put all
+  # inside the VM will be created that acts as the default location for Apache sites. Put all
   # of your project files here that you want to access through the web server
   if vagrant_version >= "1.3.0"
     config.vm.synced_folder "www/", "/srv/www/", :owner => "www-data", :mount_options => [ "dmode=775", "fmode=774" ]

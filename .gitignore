@@ -15,7 +15,7 @@
 /provision/provision-post.sh
 
 # No need to share individual site configs with each other
-/config/nginx-config/sites/*.conf
+/config/apache-config/sites/*.conf
 
 # Ignore anything in the 'custom' directory in config
 /config/custom/*
@@ -32,8 +32,8 @@
 
 # BUT....
 
-# We do have some default nginx configs that should be included
-!/config/nginx-config/sites/default.conf
+# We do have some default site configs that should be included
+!/config/apache-config/sites/wordpress-default.conf
 
 # And we do have a default SQL file that should be included
 !/database/init.sql

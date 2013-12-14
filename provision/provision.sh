@@ -146,10 +146,6 @@ if [[ $ping_result == *bytes?from* ]]; then
 		# the packages that we are installing from non standard sources via
 		# our appended apt source.list
 
-		# Nginx.org nginx key ABF5BD827BD9BF62
-		gpg -q --keyserver keyserver.ubuntu.com --recv-key ABF5BD827BD9BF62
-		gpg -q -a --export ABF5BD827BD9BF62 | apt-key add -
-
 		# Launchpad Subversion key EAA903E3A2F4C039
 		gpg -q --keyserver keyserver.ubuntu.com --recv-key EAA903E3A2F4C039
 		gpg -q -a --export EAA903E3A2F4C039 | apt-key add -
@@ -331,7 +327,7 @@ echo " * /srv/config/homebin                           -> /home/vagrant/bin"
 #
 # Make sure the services we expect to be running are running.
 echo -e "\nRestart services..."
-#service nginx restart
+service apache2 restart
 service memcached restart
 
 # Disable PHP Xdebug module by default
@@ -528,11 +524,6 @@ else
 	echo -e "\nNo network available, skipping network installations"
 fi
 
-# Find new sites to setup.
-# Kill previously symlinked Nginx configs
-# We can't know what sites have been removed, so we have to remove all
-# the configs and add them back in again.
-#find /etc/nginx/custom-sites -name 'vvv-auto-*.conf' -exec rm {} \;
 
 # Look for site setup scripts
 for SITE_CONFIG_FILE in $(find /srv/www -maxdepth 5 -name 'vvv-init.sh'); do
@@ -543,24 +534,11 @@ for SITE_CONFIG_FILE in $(find /srv/www -maxdepth 5 -name 'vvv-init.sh'); do
 	)
 done
 
-# Look for Nginx vhost files, symlink them into the custom sites dir
-#for SITE_CONFIG_FILE in $(find /srv/www -maxdepth 5 -name 'vvv-nginx.conf'); do
-#	DEST_CONFIG_FILE=${SITE_CONFIG_FILE//\/srv\/www\//}
-#	DEST_CONFIG_FILE=${DEST_CONFIG_FILE//\//\-}
-#	DEST_CONFIG_FILE=${DEST_CONFIG_FILE/%-vvv-nginx.conf/}
-#	DEST_CONFIG_FILE="vvv-auto-$DEST_CONFIG_FILE-$(md5sum <<< $SITE_CONFIG_FILE | cut -c1-32).conf"
-#	# We allow the replacement of the {vvv_path_to_folder} token with
-#	# whatever you want, allowing flexible placement of the site folder
-#	# while still having an Nginx config which works.
-#	DIR="$(dirname $SITE_CONFIG_FILE)"
-#	sed "s#{vvv_path_to_folder}#$DIR#" $SITE_CONFIG_FILE > /etc/nginx/custom-sites/$DEST_CONFIG_FILE
-#done
-
 # RESTART SERVICES AGAIN
 #
 # Make sure the services we expect to be running are running.
-#echo -e "\nRestart Nginx..."
-#service nginx restart
+echo -e "\nRestart Apache..."
+service apache2 restart
 
 # Parse any vvv-hosts file located in www/ or subdirectories of www/
 # for domains to be added to the virtual machine's host file so that it is
