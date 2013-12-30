@@ -288,6 +288,9 @@ echo " * /srv/config/apache-config/sites/               -> /etc/apache2/custom-s
 # Configure Apache for PHP-FPM
 a2enmod actions fastcgi alias
 
+# Enable mod_rewrite
+a2enmod rewrite
+
 # Copy php-fpm configuration from local
 cp /srv/config/php5-fpm-config/www.conf /etc/php5/fpm/pool.d/www.conf
 cp /srv/config/php5-fpm-config/php-custom.ini /etc/php5/fpm/conf.d/php-custom.ini
