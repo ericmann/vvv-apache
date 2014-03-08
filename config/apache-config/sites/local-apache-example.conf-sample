@@ -1,0 +1,13 @@
+<VirtualHost *:80>
+	# Tells apache which directory the files for this domain are located
+	DocumentRoot /srv/www/wordpress-local
+
+	# Tells apache what domain name should trigger this configuration. 
+	# See https://httpd.apache.org/docs/2.2/vhosts/name-based.html
+	ServerName testserver.com
+
+	# Lists additional domains that should trigger this configuration.
+	# Multiple domains can be space delimited here. Uncomment ServerAlias
+	# to use. See https://httpd.apache.org/docs/2.2/vhosts/name-based.html
+	# ServerAlias *.testserver.com testserver2.com
+</VirtualHost>
