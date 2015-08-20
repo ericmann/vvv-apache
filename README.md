@@ -1,5 +1,7 @@
 # Varying Vagrant Vagrants - Apache Edition
 
+**This project is not actively maintained and exists on GitHub only for archival purposes!**
+
 Varying Vagrant Vagrants is an evolving [Vagrant](http://vagrantup.com) configuration focused on [WordPress](http://wordpress.org) development.
 
 * **Version**: 1.0
